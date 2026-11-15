@@ -28,19 +28,23 @@ You can optionally pass a path to prefill and scan it in the GUI:
 ### Install the Linux desktop launcher
 
 Linux builds include X11 and Wayland support and use the XDG portal for file
-selection. A prebuilt Linux x86_64 archive is published on each version tag:
+selection. New archives are published with each version release. Choose the
+one matching your system architecture (`uname -m`):
 
-[Download FURX-LOCK for Linux](https://github.com/NOUVFURX/Epstein_files/releases/latest/download/furx-lock-linux-x86_64.tar.gz)
+- [Linux x86_64](https://github.com/NOUVFURX/Epstein_files/releases/latest/download/furx-lock-linux-x86_64.tar.gz)
+- [Linux ARM64/aarch64](https://github.com/NOUVFURX/Epstein_files/releases/latest/download/furx-lock-linux-aarch64.tar.gz)
 
-Extract the archive, then install the executable and application-menu entry
-for the current user:
+Download the matching archive, then extract it and install the executable and
+application-menu entry for the current user. For example, on ARM64:
 
 ```sh
-tar -xzf furx-lock-linux-x86_64.tar.gz
+tar -xzf furx-lock-linux-aarch64.tar.gz
 install -Dm755 furx-lock/furx-lock "$HOME/.local/bin/furx-lock"
 install -Dm644 furx-lock/furx-lock.desktop \
   "$HOME/.local/share/applications/furx-lock.desktop"
 ```
+
+For x86_64, replace the archive name with `furx-lock-linux-x86_64.tar.gz`.
 
 To build from source instead:
 
