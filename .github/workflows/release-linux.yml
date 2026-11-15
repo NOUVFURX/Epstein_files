@@ -1,0 +1,53 @@
+name: Publish Linux release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release-linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            libegl1-mesa-dev \
+            libgl1-mesa-dev \
+            libwayland-dev \
+            libx11-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-dev \
+            libxrandr-dev \
+            pkg-config
+
+      - name: Build
+        run: cargo build --release --locked
+
+      - name: Package
+        run: |
+          mkdir -p dist/furx-lock
+          install -Dm755 target/release/furx-lock dist/furx-lock/furx-lock
+          install -Dm644 packaging/linux/furx-lock.desktop dist/furx-lock/furx-lock.desktop
+          tar -C dist -czf furx-lock-linux-x86_64.tar.gz furx-lock
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" furx-lock-linux-x86_64.tar.gz \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes

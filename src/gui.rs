@@ -18,18 +18,18 @@ use crate::{grant_owner_permissions, list_processes, path_access_error, terminat
 pub fn launch(initial_path: Option<PathBuf>) -> Result<(), String> {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_title("Locksmith")
+            .with_title("FURX-LOCK")
             .with_inner_size([900.0, 620.0])
             .with_min_inner_size([700.0, 450.0]),
         ..Default::default()
     };
 
     eframe::run_native(
-        "Locksmith",
+        "FURX-LOCK",
         options,
         Box::new(move |_creation_context| Ok(Box::new(LocksmithGui::new(initial_path)))),
     )
-    .map_err(|error| format!("Could not open Locksmith: {error}"))
+    .map_err(|error| format!("Could not open FURX-LOCK: {error}"))
 }
 
 struct LocksmithGui {
@@ -344,7 +344,7 @@ impl LocksmithGui {
                     }
                 }
                 if matches!(operation, Operation::Unlock) && summary.updated.is_empty() {
-                    status.push_str(" No Locksmith-locked files were unlocked.");
+                    status.push_str(" No files locked by FURX-LOCK were unlocked.");
                 }
                 if matches!(operation, Operation::Unlock)
                     && !summary.updated.is_empty()
@@ -493,7 +493,7 @@ impl LocksmithGui {
         }
 
         egui::CentralPanel::default().show(root_ui, |ui| {
-            ui.heading("Locksmith");
+            ui.heading("FURX-LOCK");
             ui.label("Find processes holding open files and manage them safely.");
             ui.add_space(12.0);
 
@@ -578,7 +578,7 @@ impl LocksmithGui {
             ))
             .default_open(true)
             .show(ui, |ui| {
-                ui.label("The list uses Locksmith's unreadable and immutable file flags.");
+                ui.label("The list uses FURX-LOCK's unreadable and immutable file flags.");
                 if let Some(error) = &locked_files_error {
                     ui.colored_label(egui::Color32::RED, error);
                 } else if locked_files.is_empty() {
@@ -724,7 +724,7 @@ impl LocksmithGui {
                             "Save this passphrase for Touch ID unlock",
                         );
                         ui.label(
-                            "Locksmith will ask for Touch ID before reading this passphrase from your login Keychain.",
+                            "FURX-LOCK will ask for Touch ID before reading this passphrase from your login Keychain.",
                         );
                     }
                     #[cfg(target_os = "macos")]

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=FURX-LOCK
+Comment=Lock files and inspect open file handles
+Exec=furx-lock
+Terminal=false
+Categories=Utility;Security;
+StartupNotify=true

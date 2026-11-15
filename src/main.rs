@@ -244,7 +244,7 @@ fn offer_permissions(path: &Path) -> Result<(), String> {
     )?;
     if answer.eq_ignore_ascii_case("y") {
         grant_owner_permissions(path)?;
-        println!("Owner permissions updated for this path only. Run locksmith again to rescan.");
+        println!("Owner permissions updated for this path only. Run FURX-LOCK again to rescan.");
     }
     Ok(())
 }

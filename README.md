@@ -1,14 +1,14 @@
-# locksmith
+# FURX-LOCK
 
-`locksmith` is a Rust command-line utility for finding processes with open file
-descriptors on a file or directory. Directory scans are recursive and use
-`lsof`; `lsof` and `ps` must be available on `PATH`.
+`FURX-LOCK` is a Rust desktop app and command-line utility for finding processes
+with open file descriptors on a file or directory. Directory scans are
+recursive and use `lsof`; `lsof` and `ps` must be available on `PATH`.
 
 Build and run:
 
 ```sh
 cargo build --release
-./target/release/locksmith
+./target/release/furx-lock
 ```
 
 Starting without arguments opens the native desktop window, where you can enter
@@ -24,6 +24,31 @@ You can optionally pass a path to prefill and scan it in the GUI:
 ```sh
 ./run.sh /path/to/file-or-folder
 ```
+
+### Install the Linux desktop launcher
+
+Linux builds include X11 and Wayland support and use the XDG portal for file
+selection. A prebuilt Linux x86_64 archive is published on each version tag:
+
+[Download FURX-LOCK for Linux](https://github.com/NOUVFURX/Epstein_files/releases/latest/download/furx-lock-linux-x86_64.tar.gz)
+
+Extract the archive, then install the executable and application-menu entry
+for the current user:
+
+```sh
+tar -xzf furx-lock-linux-x86_64.tar.gz
+install -Dm755 furx-lock/furx-lock "$HOME/.local/bin/furx-lock"
+install -Dm644 furx-lock/furx-lock.desktop \
+  "$HOME/.local/share/applications/furx-lock.desktop"
+```
+
+To build from source instead:
+
+```sh
+cargo build --release
+```
+
+The **FURX-LOCK** launcher will then appear in the desktop application menu.
 
 In the GUI, select processes in the results table and confirm before sending
 them `SIGTERM`. Use `--plain <file-or-directory>` for the prompt-based terminal
@@ -67,7 +92,7 @@ choose a strong password. The plaintext password is not stored in the
 encrypted file.
 
 On macOS, the optional Touch ID feature stores the passphrase in the login
-Keychain and requires a Touch ID prompt in Locksmith before retrieving it. It
+Keychain and requires a Touch ID prompt in FURX-LOCK before retrieving it. It
 is available only in the GUI, only on that Mac. Use **Set up Face Lock** in
 the main window, entering the same passphrase used for your files; you can
 also save a passphrase when locking files. In the unlock dialog, choose
@@ -82,7 +107,7 @@ canceled, or fails, enter the master passphrase instead. This feature uses
 Touch ID, not Face ID. Windows Hello support is not included.
 
 The GUI's **Locked files under selected path** list shows regular files marked
-unreadable and immutable by Locksmith. Unlocking still verifies the encrypted
+unreadable and immutable by FURX-LOCK. Unlocking still verifies the encrypted
 file format before restoring contents.
 
 Back up important files before locking: losing the password makes the contents
