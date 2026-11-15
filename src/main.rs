@@ -5,6 +5,8 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
+#[cfg(target_os = "macos")]
+mod biometric;
 mod file_lock;
 mod gui;
 
