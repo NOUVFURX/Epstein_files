@@ -109,6 +109,21 @@ pub fn run_with_password(
     Ok(process_files(operation, files, password))
 }
 
+pub fn find_locked_files(input_path: &Path) -> Result<Vec<PathBuf>, String> {
+    let (_, files) = collect_target_files(input_path)?;
+    let mut locked_files = Vec::new();
+
+    for path in files {
+        let metadata = fs::symlink_metadata(&path)
+            .map_err(|error| format!("Could not inspect '{}': {error}", path.display()))?;
+        if metadata.permissions().mode() & 0o777 == 0 && is_immutable(&path, &metadata)? {
+            locked_files.push(path);
+        }
+    }
+
+    Ok(locked_files)
+}
+
 fn collect_target_files(input_path: &Path) -> Result<(PathBuf, Vec<PathBuf>), String> {
     let metadata = fs::symlink_metadata(input_path)
         .map_err(|error| format!("Could not inspect '{}': {error}", input_path.display()))?;
@@ -623,9 +638,14 @@ mod tests {
         let original_mode = fs::metadata(&path).unwrap().permissions().mode() & 0o777;
         let password = b"correct horse battery staple";
 
+        assert!(find_locked_files(directory.path()).unwrap().is_empty());
         assert!(lock_file(&path, password).unwrap());
         assert_eq!(fs::metadata(&path).unwrap().permissions().mode() & 0o777, 0);
         assert!(is_immutable(&path, &fs::metadata(&path).unwrap()).unwrap());
+        assert_eq!(
+            find_locked_files(directory.path()).unwrap(),
+            vec![fs::canonicalize(&path).unwrap()]
+        );
         assert!(fs::read(&path).is_err());
         assert!(fs::remove_file(&path).is_err());
 
@@ -647,6 +667,7 @@ mod tests {
         rewrite_locked_file(&path, &encrypted);
         assert!(unlock_file(&path, password).unwrap());
         assert_eq!(fs::read(&path).unwrap(), original);
+        assert!(find_locked_files(directory.path()).unwrap().is_empty());
         assert_eq!(
             fs::metadata(&path).unwrap().permissions().mode() & 0o777,
             original_mode

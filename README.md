@@ -27,8 +27,10 @@ You can optionally pass a path to prefill and scan it in the GUI:
 
 In the GUI, select processes in the results table and confirm before sending
 them `SIGTERM`. Use `--plain <file-or-directory>` for the prompt-based terminal
-interface. The GUI also provides **Lock files** and **Unlock & open** actions;
-unlocking requires the correct password and does not attempt password guessing.
+interface. The GUI also provides **Lock files** and **Unlock & open** actions.
+On macOS, you can optionally save the passphrase in the Keychain behind Touch
+ID and use it to unlock files; the master passphrase remains available as a
+fallback.
 The app also supports `lock` and `unlock` commands below.
 
 Selected processes receive `SIGTERM` (not a force kill), after confirmation.
@@ -61,7 +63,27 @@ These OS protections are safeguards, not tamper-proof security: an
 administrator (and, depending on platform configuration, the file owner) can
 deliberately clear immutable flags. A salted password verifier is stored in
 each encrypted file as requested; it enables offline password guessing, so
-choose a strong password. The plaintext password is not stored.
+choose a strong password. The plaintext password is not stored in the
+encrypted file.
+
+On macOS, the optional Touch ID feature stores the passphrase in the login
+Keychain and requires a Touch ID prompt in Locksmith before retrieving it. It
+is available only in the GUI, only on that Mac. Use **Set up Face Lock** in
+the main window, entering the same passphrase used for your files; you can
+also save a passphrase when locking files. In the unlock dialog, choose
+**Unlock with Touch ID** and optionally **Choose app to open with...**. The
+chosen app opens the decrypted file without asking for the master passphrase.
+Unlocking restores plaintext in place, so relock the file after use if needed.
+
+The saved credential can be removed from the unlock dialog. The biometric
+prompt is an application-level gate; it does not protect against malicious
+software running as the same macOS user. If authentication is unavailable,
+canceled, or fails, enter the master passphrase instead. This feature uses
+Touch ID, not Face ID. Windows Hello support is not included.
+
+The GUI's **Locked files under selected path** list shows regular files marked
+unreadable and immutable by Locksmith. Unlocking still verifies the encrypted
+file format before restoring contents.
 
 Back up important files before locking: losing the password makes the contents
 unrecoverable. Recursive runs skip symbolic links and can partially complete
