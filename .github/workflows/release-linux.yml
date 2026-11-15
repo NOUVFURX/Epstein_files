@@ -4,13 +4,23 @@ on:
   push:
     tags:
       - "v*"
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
-  release-linux:
-    runs-on: ubuntu-24.04
+  build-linux:
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -42,12 +52,33 @@ jobs:
           mkdir -p dist/furx-lock
           install -Dm755 target/release/furx-lock dist/furx-lock/furx-lock
           install -Dm644 packaging/linux/furx-lock.desktop dist/furx-lock/furx-lock.desktop
-          tar -C dist -czf furx-lock-linux-x86_64.tar.gz furx-lock
+          tar -C dist -czf "furx-lock-linux-${{ matrix.arch }}.tar.gz" furx-lock
+
+      - name: Upload build archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: furx-lock-linux-${{ matrix.arch }}
+          path: furx-lock-linux-${{ matrix.arch }}.tar.gz
+          if-no-files-found: error
+
+  publish-release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build-linux
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download build archives
+        uses: actions/download-artifact@v4
+        with:
+          pattern: furx-lock-linux-*
+          path: dist
+          merge-multiple: true
 
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" furx-lock-linux-x86_64.tar.gz \
+          gh release create "$GITHUB_REF_NAME" \
+            dist/furx-lock-linux-x86_64.tar.gz \
+            dist/furx-lock-linux-aarch64.tar.gz \
             --title "$GITHUB_REF_NAME" \
             --generate-notes
