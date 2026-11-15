@@ -34,6 +34,21 @@ one matching your system architecture (`uname -m`):
 - [Linux x86_64](https://github.com/NOUVFURX/Epstein_files/releases/latest/download/furx-lock-linux-x86_64.tar.gz)
 - [Linux ARM64/aarch64](https://github.com/NOUVFURX/Epstein_files/releases/latest/download/furx-lock-linux-aarch64.tar.gz)
 
+#### Quick setup for Kali ARM64
+
+After the ARM64 archive is published, paste this command into a terminal to
+download it, install the app and launcher, and open the GUI:
+
+```sh
+curl -fL -o furx-lock-linux-aarch64.tar.gz \
+  https://github.com/NOUVFURX/Epstein_files/releases/latest/download/furx-lock-linux-aarch64.tar.gz &&
+tar -xzf furx-lock-linux-aarch64.tar.gz &&
+install -Dm755 furx-lock/furx-lock "$HOME/.local/bin/furx-lock" &&
+install -Dm644 furx-lock/furx-lock.desktop \
+  "$HOME/.local/share/applications/furx-lock.desktop" &&
+"$HOME/.local/bin/furx-lock"
+```
+
 Download the matching archive, then extract it and install the executable and
 application-menu entry for the current user. For example, on ARM64:
 
